@@ -2,13 +2,20 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Dropdown, DropdownButton } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 
-export default function Highlight({ text,onSubmit }) {
+export default function Highlight({ text, onSubmit }) {
     const [showContextMenu, setShowContextMenu] = useState(false);
     const [contextMenuPosition, setContextMenuPosition] = useState({ x: 0, y: 0 });
     const [selectedText, setSelectedText] = useState('');
     const [highlights, setHighlights] = useState([]); // Store highlights
     const contextMenuRef = useRef(null);
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const storedHighlights = localStorage.getItem('highlights');
+        if (storedHighlights) {
+            setHighlights(JSON.parse(storedHighlights));
+        }
+    }, []);
 
     const handleMouseUp = () => {
         const selection = window.getSelection();
@@ -36,22 +43,23 @@ export default function Highlight({ text,onSubmit }) {
         setHighlights([...highlights, { text: selectedText, color }]);
         setShowContextMenu(false);
     };
+
+    const clearHighlight = () => {
+        setHighlights([]);
+        setShowContextMenu(false);
+    };
+
     const handleCreateNote = () => {
         onSubmit({ title: 'New Note', markdown: selectedText, tags: [] });
         setShowContextMenu(false);
         navigate('/new', { state: { markdown: selectedText } });
+        localStorage.setItem('uploadedText', selectedText);
+        localStorage.setItem('highlights', JSON.stringify(highlights));
     };
-
-    useEffect(() => {
-        const storedHighlights = localStorage.getItem('highlights');
-        if (storedHighlights) {
-            setHighlights(JSON.parse(storedHighlights));
-        }
-    }, []);
 
     const renderText = () => {
         let parts = [text]; // Start with the initial text as a single part
-        highlights.forEach(highlight => {
+        highlights.forEach((highlight, index) => {
             let newParts = [];
             parts.forEach(part => {
                 // Check if part is a string or a React element
@@ -62,7 +70,14 @@ export default function Highlight({ text,onSubmit }) {
                     splitText.forEach((text, index) => {
                         combined.push(text);
                         if (index < splitText.length - 1) {
-                            combined.push(<span style={{ backgroundColor: highlight.color }} key={`${highlight.text}-${index}`}>{highlight.text}</span>);
+                            combined.push(
+                                <span
+                                    style={{ backgroundColor: highlight.color }}
+                                    key={`${highlight.text}-${index}`}
+                                >
+                                    {highlight.text}
+                                </span>
+                            );
                         }
                     });
                     newParts = newParts.concat(combined);
@@ -73,20 +88,24 @@ export default function Highlight({ text,onSubmit }) {
             });
             parts = newParts;
         });
-        return parts.map((part, index) => <React.Fragment key={index}>{part}</React.Fragment>);
+        return parts.map((part, index) => (
+            <React.Fragment key={index}>{part}</React.Fragment>
+        ));
     };
-    
+
     return (
         <div onMouseUp={handleMouseUp}>
-            <div>
-                {renderText()}
-            </div>
+            <div>{renderText()}</div>
             {showContextMenu && (
-                <div ref={contextMenuRef} style={{ position: 'absolute', top: contextMenuPosition.y, left: contextMenuPosition.x }}>
+                <div
+                    ref={contextMenuRef}
+                    style={{ position: 'absolute', top: contextMenuPosition.y, left: contextMenuPosition.x }}
+                >
                     <DropdownButton id="dropdown-basic-button" title="Options">
                         <Dropdown.Item onClick={() => addHighlight('yellow')}>Yellow</Dropdown.Item>
                         <Dropdown.Item onClick={() => addHighlight('red')}>Red</Dropdown.Item>
                         <Dropdown.Item onClick={() => addHighlight('green')}>Green</Dropdown.Item>
+                        <Dropdown.Item onClick={clearHighlight}>Clear Highlight</Dropdown.Item>
                         <Dropdown.Item onClick={handleCreateNote}>Create Note</Dropdown.Item>
                     </DropdownButton>
                 </div>

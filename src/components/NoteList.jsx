@@ -5,10 +5,11 @@ import ReactSelect from 'react-select';
 import styles from '../../src/NoteList.module.css';
 import Highlight from './Highlight';
 
-export const NoteList = ({ text,availableTags, notes, deleteTag, updateTag }) => {
+export const NoteList = ({ availableTags, notes, deleteTag, updateTag }) => {
     const [selectedTags, setSelectedTags] = useState([]);
     const [search, setSearch] = useState('');
     const [uploadedText, setUploadedText] = useState('');
+    const [highlights, setHighlights] = useState([]);
     // const [highlightedText, setHighlightedText] = useState('');
     // const [highlightColor, setHighlightColor] = useState('yellow');
 
@@ -21,15 +22,21 @@ export const NoteList = ({ text,availableTags, notes, deleteTag, updateTag }) =>
     //     if (storedColor) setHighlightColor(storedColor);
     //     if (storedUploadedText) setUploadedText(storedUploadedText);
     // }, []);
-
-    const [highlights, setHighlights] = useState([]);
-
+    
     useEffect(() => {
+        // Retrieve uploaded text and highlights from localStorage
+        const uploadedText = localStorage.getItem('uploadedText');
         const storedHighlights = localStorage.getItem('highlights');
+
         if (storedHighlights) {
             setHighlights(JSON.parse(storedHighlights));
         }
+
+        if (uploadedText) {
+            setUploadedText(uploadedText);
+        }
     }, []);
+    
 
     const handleFileChange = (event) => {
         const file = event.target.files[0];
@@ -64,10 +71,10 @@ export const NoteList = ({ text,availableTags, notes, deleteTag, updateTag }) =>
     return (
         <>
             <Row>
-                <Col>
-                <h2 className="mb-4">Uploaded Text</h2>
-                <input type="file" accept=".txt" onChange={handleFileChange} />
-                    <Highlight text={uploadedText} onSubmit={handleCreateNote} />
+                 <Col>
+                    <h2 className="mb-4">Uploaded Text</h2>
+                    <input type="file" accept=".txt" onChange={handleFileChange} />
+                    <Highlight text={uploadedText}  onSubmit={handleCreateNote} />
                 </Col>
             </Row>
 
