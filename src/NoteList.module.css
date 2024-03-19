@@ -1,9 +1,14 @@
+/* NoteCard.module.css */
 .card {
-  transition: translate ease-in-out 100ms, box-shadow ease-in-out 100ms;
+  transition: transform ease-in-out 0.3s, box-shadow ease-in-out 0.3s, border-color ease-in-out 0.3s;
   background-color: #fff8e6;
+  border: 3px solid transparent; /* Initial transparent border */
 }
+
 .card:hover,
 .card:focus {
-  translate: 0 -5px;
-  box-shadow: 0 5px 8px 0 rgba(0, 0, 0, .2);
+  transform: translateY(-5px);
+  box-shadow: 0 5px 8px 0 rgba(0, 0, 0, 0.2);
+  border-image: linear-gradient(to right, #ff7e5f, #feb47b, #ffeb83, #ff7e5f);
+  border-image-slice: 1;
 }

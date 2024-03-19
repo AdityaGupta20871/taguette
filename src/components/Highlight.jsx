@@ -11,11 +11,20 @@ export default function Highlight({ text, onSubmit }) {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const storedHighlights = localStorage.getItem('highlights');
-        if (storedHighlights) {
-            setHighlights(JSON.parse(storedHighlights));
+        const storedData = localStorage.getItem('textAndHighlights');
+        if (storedData) {
+            const { savedText, savedHighlights } = JSON.parse(storedData);
+            console.log('Parsed data:', savedText, savedHighlights);
+            setSelectedText(savedText);
+            setHighlights(savedHighlights);
         }
     }, []);
+
+    const updateTextAndHighlightsInLocalStorage = (newText, newHighlights) => {
+        const dataToStore = JSON.stringify({ savedText: newText, savedHighlights: newHighlights });
+        localStorage.setItem('textAndHighlights', dataToStore);
+    };
+
 
     const handleMouseUp = () => {
         const selection = window.getSelection();
@@ -53,9 +62,9 @@ export default function Highlight({ text, onSubmit }) {
         onSubmit({ title: 'New Note', markdown: selectedText, tags: [] });
         setShowContextMenu(false);
         navigate('/new', { state: { markdown: selectedText } });
-        localStorage.setItem('uploadedText', selectedText);
-        localStorage.setItem('highlights', JSON.stringify(highlights));
+        updateTextAndHighlightsInLocalStorage(selectedText, highlights);
     };
+
 
     const renderText = () => {
         let parts = [text]; // Start with the initial text as a single part
@@ -95,7 +104,9 @@ export default function Highlight({ text, onSubmit }) {
 
     return (
         <div onMouseUp={handleMouseUp}>
-            <div>{renderText()}</div>
+            <div className="border border-secondary p-3 rounded bg-light mb-4">
+            {renderText()}
+        </div>
             {showContextMenu && (
                 <div
                     ref={contextMenuRef}

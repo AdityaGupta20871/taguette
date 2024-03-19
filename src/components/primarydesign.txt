@@ -1,0 +1,174 @@
+        {/* <Row>
+          <Col>
+            <div className="d-flex align-items-center justify-content-center">
+              <h1 className="me-2">Taguette Your customized</h1>
+              <h2 className="text-nowrap">
+                <Typewriter
+                  options={{
+                    loop: true,
+                  }}
+                  onInit={(typewriter) => {
+                    typewriter
+                      .typeString(
+                        '<span style="color: #27ae60; font-weight:bold">Highlighting</span> '
+                      )
+                      .pauseFor(1000)
+                      .deleteAll()
+                      .typeString(
+                        '<span style="color: #27ae60; font-weight:bold">Tagging</span>'
+                      )
+                      .pauseFor(1000)
+                      .deleteAll()
+                      .typeString(
+                        '<span style="color: #27ae60; font-weight:bold">Note Making</span>'
+                      )
+                      .pauseFor(1000)
+                      .start();
+                  }}
+                />
+              </h2>
+            </div>
+
+            <input type="file" accept=".txt" onChange={handleFileChange} />
+            <Highlight
+              text={uploadedText}
+              highlights={highlights}
+              setHighlights={setHighlights}
+              onSubmit={handleCreateNote}
+            />
+          </Col>
+        </Row>
+
+        <Row>
+          <Col>
+            <h1 className="mb-4">Notes</h1>
+          </Col>
+          <Col xs="auto">
+            <Row className="mb-4">
+              <Col>
+                <Form.Group controlId="search">
+                  <Form.Label>Search</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Search"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                  />
+                </Form.Group>
+              </Col>
+              <Col>
+                <Form.Group controlId="tags">
+                  <Form.Label>Tags</Form.Label>
+                  <ReactSelect
+                    styles={{
+                      control: (provided) => ({
+                        ...provided,
+                        backgroundColor: "#fff8e6",
+                      }),
+                    }}
+                    value={selectedTags.map((tag) => ({
+                      value: tag.id,
+                      label: tag.name,
+                    }))}
+                    options={availableTags.map((tag) => ({
+                      value: tag.id,
+                      label: tag.name,
+                    }))}
+                    onChange={(tags) =>
+                      setSelectedTags(
+                        tags.map((tag) => ({ id: tag.value, name: tag.label }))
+                      )
+                    }
+                    isMulti
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+            <Row className="mb-4">
+              <Col>
+                <Link to="/new">
+                  <Button variant="primary">New Note</Button>
+                </Link>
+              </Col>
+              <Col>
+                <Button
+                  variant="outline-secondary"
+                  onClick={() => setModalShow(true)}
+                >
+                  Edit Tags
+                </Button>
+              </Col>
+            </Row>
+          </Col>
+        </Row>
+        <Row xs={1} sm={2} lg={3} xl={4} className="g-3">
+          {filteredNotes.map((note) => (
+            <Col key={note.id}>
+              <NoteCard
+                id={note.id}
+                title={note.title}
+                tags={note.tags}
+                markdown={note.markdown}
+              />
+            </Col>
+          ))}
+        </Row> */}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        const NoteCard = ({ id, title, tags, markdown }) => {
+    if (markdown.length > 30) {
+        markdown = markdown.substring(0, 30) + '...';
+    }
+
+    return (
+        // Wrap Card with Link instead of using `as={Link}` prop
+        <Link to={`${id}`} className="text-reset text-decoration-none">
+            <Card className={`h-100 ${styles.card}`}>
+                <Card.Body>
+                    <Stack gap={2} className="align-items-center justify-content-center h-100">
+                        <span className="fs-5">{title}</span>
+                        <Card.Text className="text-truncate">{markdown}</Card.Text>
+                        <Stack direction="horizontal" gap={2} className="justify-content-center flex-wrap">
+                            {tags.map(tag => (
+                                <Badge className="text-truncate" key={tag.id}>{tag.name}</Badge>
+                            ))}
+                        </Stack>
+                    </Stack>
+                </Card.Body>
+            </Card>
+        </Link>
+    );
+};
